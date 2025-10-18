@@ -1,0 +1,180 @@
+ 
+ <!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Location-Based Event Finder</title>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDeLhGjOWMEkJR1wzZ5yXDX_gcOG75CpG4"
+    async
+    defer
+  ></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 1rem;
+    }
+    input,
+    button,
+    textarea {
+      margin: 5px 0;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 60px;
+    }
+    .hidden {
+      display: none;
+    }
+    .tab-btn {
+      margin-right: 5px;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #f9f9f9;
+    }
+    .tab-btn.active {
+      background: #007bff;
+      color: white;
+    }
+    .event-card {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    #logoutBtn {
+      margin-left: auto;
+      width: auto;
+      padding: 8px 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="landing-section" style="text-align: center;">
+    <img src="geo.png" alt="GeoHappen Logo" style="width: 220px; margin-bottom: 1px" />
+    <div style="font-size: 9rem; font-weight: 1000; margin-bottom: 20px">GeoHappen</div>
+    <div style="font-size: 1.5rem; font-weight: 600; color: #0b0a0a">
+      A Geo Location Based Event Finder
+    </div>
+    <button id="startFindBtn" style="margin-top: 30px; padding: 14px 48px; font-size: 1.2rem">Start Finding Events</button>
+  </div>
+
+  <!-- Auth Section -->
+  <div id="auth-section" class="hidden">
+    <h1>📍Event Finder</h1>
+    <h2>Register / Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="registerBtn">Register</button>
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <!-- Dashboard Section -->
+  <div id="app-section" class="hidden">
+    <nav>
+      <div>
+        <h1>📍Event Finder</h1>
+        <button class="tab-btn" data-tab="addTab">➕ Add Event</button>
+        <button class="tab-btn" data-tab="viewTab">📋 View Events</button>
+      </div>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+
+    <!-- Add Event Tab -->
+    <div id="addTab" class="tab-content hidden">
+      <h2>Create Event</h2>
+      <input type="text" id="title" placeholder="Event title" />
+      <textarea id="description" placeholder="Event description"></textarea>
+      <input type="text" id="venue" placeholder="Event venue" />
+      <input type="number" step="any" id="lat" placeholder="Latitude" />
+      <input type="number" step="any" id="lon" placeholder="Longitude" />
+      <!-- CATEGORY & DATE/TIME -->
+      <div class="event-input-group">
+        <label for="category">Category:</label>
+        <select id="category">
+          <option value="">Select Category</option>
+          <option value="Music">Music</option>
+          <option value="Literary">Literary</option>
+          <option value="Dance">Dance</option>
+          <option value="Tech">Tech</option>
+          <option value="Food">Food</option>
+          <option value="Business/Startup">Business/Startup</option>
+          <option value="Management">Management</option>
+          <option value="Academic">Academic</option>
+          <option value="Sports">Sports</option>
+          <option value="Art">Art</option>
+          <option value="Religious">Religious</option>
+          <option value="Health & Wellness">Health & Wellness</option>
+          <option value="Other Event">Other Event</option>
+        </select>
+
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date" placeholder="Start date" />
+        <label for="start-time">Start Time:</label>
+        <input type="time" id="start-time" placeholder="Start time" />
+
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date" placeholder="End date" />
+        <label for="end-time">End Time:</label>
+        <input type="time" id="end-time" placeholder="End time" />
+      </div>
+      <button id="createEventBtn">Add Event</button>
+    </div>
+
+    <!-- View Events Tab -->
+    <div id="viewTab" class="tab-content hidden">
+      <h2>Events</h2>
+
+      <div id="filter-section">
+        <h3>Filter Events</h3>
+        <select id="filter-category">
+          <option value="">All Categories</option>
+          <option value="Music">Music</option>
+          <option value="Literary">Literary</option>
+          <option value="Dance">Dance</option>
+          <option value="Tech">Tech</option>
+          <option value="Food">Food</option>
+          <option value="Business/Startup">Business/Startup</option>
+          <option value="Management">Management</option>
+          <option value="Academic">Academic</option>
+          <option value="Sports">Sports</option>
+          <option value="Art">Art</option>
+          <option value="Religious">Religious</option>
+          <option value="Health & Wellness">Health & Wellness</option>
+          <option value="Other Event">Other Event</option>
+        </select>
+        <input type="date" id="filter-start-date" placeholder="Start date for filter" />
+        <input type="date" id="filter-end-date" placeholder="End date for filter" />
+        <button id="apply-filters">Apply Filters</button>
+        <button id="view-liked-events">View Event Recommendations</button>
+      </div>
+
+      <div id="events"></div>
+      <div id="map" style="width:100%; height:400px;"></div>
+      <div id="recommendations"></div>
+    </div>
+  </div>
+
+  <script type="module" src="auth.js"></script>
+  <script type="module" src="app.js"></script>
+  <script type="module" src="frontend.js"></script>
+  
+</body>
+</html>
